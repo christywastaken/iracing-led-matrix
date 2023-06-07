@@ -1,5 +1,6 @@
 import numpy as np 
 
+
 #2d numpy for num '1'
 image1 = np.zeros((32,32))
 image1[14:17, 5:27] = 1
