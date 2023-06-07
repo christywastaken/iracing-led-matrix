@@ -50,7 +50,6 @@ for i in range(8):
 	x -= 1
 	y1 += 2
 	y2 += 2
-	print(f'x={x}, y1={y1}, y2={y2}')
 
 image4[:13,-9:] = 0
 
@@ -133,4 +132,8 @@ for i in range(9):
 rows, cols = np.where(image_N == 1)
 coords_N = list(zip(rows, cols))
 
-number_coords_list  = [coords1, coords2, coords3, coords4, coords5, coords6, coords_R, coords_N]
+gear_coords_list  = [coords_N, coords1, coords2, coords3, coords4, coords5, coords6, coords_R]
+
+with open('gears_coords.txt', 'w') as f:
+	for gear in gear_coords_list:
+		f.write(f'{gear}\n') 
