@@ -29,8 +29,15 @@ matrix = RGBMatrix(options=options)
 # matrix.SetImage(image.convert('RGB'))
 
 
-for x, y in numbers_for_disp.coords:    
-    matrix.SetPixel(x, y, 255, 0, 0)
+for i in numbers_for_disp.number_coords_list:
+	matrix.Clear()
+	for x, y in i:
+		matrix.SetPixel(x, y, 255, 0, 0)
+	input('Press Enter to continue')
+	if i == len(numbers_for_disp.number_coords_list) - 1:
+		break
+	
+	
 
 try:
     print("Press CTRL-C to stop.")
