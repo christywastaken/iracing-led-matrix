@@ -1,7 +1,4 @@
-from rgbmatrix import RGBMatrix, RGBMatrixOptions
-import time
-import sys 
-import numbers_for_disp
+from rgbmatrix import RGBMatrix, RGBMatrixOptions 
 import ast
 
 options = RGBMatrixOptions()
@@ -17,21 +14,28 @@ matrix = RGBMatrix(options=options)
 gears_coords_list = []
 
 with open('gears_coords.txt', 'r') as f:
-      for line in f:
-            line.strip()
-            data_list = ast.literal_eval(line)
-            gears_coords_list.append(data_list)
+    for line in f:
+        line.strip()
+        data_list = ast.literal_eval(line)
+        gears_coords_list.append(data_list)
 
 def display_gear(gear_coords: list):
-      matrix.clear()
-      for x, y  in gear_coords:
-            matrix.SetPixel(x, y, 255, 0, 0)
+    matrix.Clear()
+    for x, y  in gear_coords:
+        matrix.SetPixel(x, y, 255, 0, 0)
 
 def select_gear(gear: str):
-      if gear == 'N':
+    try:
+        if gear == 'N':
             display_gear(gears_coords_list[0])
-            
+        elif gear == 'R':
+            display_gear(gears_coords_list[-1])
+        else:
+            gear_int = int(gear)
+            display_gear(gears_coords_list[gear_int])
+    except IndexError as err:
+        print(f'Error: {err}')
       
 def process_data(data):
-      data = data.decode()
-	  print(data)
+     data = data.decode()
+     select_gear(data)
