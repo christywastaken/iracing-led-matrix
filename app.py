@@ -2,6 +2,7 @@ from rgbmatrix import RGBMatrix, RGBMatrixOptions
 import time
 import sys 
 import os
+import numbers_for_disp
 from PIL import Image
 
 # if len(sys.argv) < 2:
@@ -20,16 +21,20 @@ options.cols = 64
 options.chain_length = 1 
 options.parallel = 1
 options.disable_hardware_pulsing = 1
+options.brightness = 50
 
 
 matrix = RGBMatrix(options=options)
 # image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
 # matrix.SetImage(image.convert('RGB'))
-matrix.SetPixel(4,4, 255, 0, 0)
+
+
+for x, y in numbers_for_disp.coords:    
+    matrix.SetPixel(x, y, 255, 0, 0)
 
 try:
     print("Press CTRL-C to stop.")
     while True:
-        time.sleep(100)
+        time.sleep(10)
 except KeyboardInterrupt:
     sys.exit(0)
