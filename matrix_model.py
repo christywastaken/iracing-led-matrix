@@ -8,6 +8,7 @@ options.chain_length = 1
 options.parallel = 1
 options.disable_hardware_pulsing = 1
 options.brightness = 50
+options.hardware_mapping = 'adafruit-hat'
 
 matrix = RGBMatrix(options=options)
 
