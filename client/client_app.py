@@ -5,9 +5,9 @@ sock = socket.socket()
 
 PORT = 12345
 
-MAC_IP = '10.83.1.239'
+PC_IP = '10.83.1.178'
 
-sock.connect((MAC_IP, PORT))
+sock.connect((PC_IP, PORT))
 
 
 while True:

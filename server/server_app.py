@@ -1,4 +1,4 @@
-import socket 
+import socket
 import time
 sock = socket.socket()
 

@@ -14,7 +14,7 @@ matrix = RGBMatrix(options=options)
 
 gears_coords_list = []
 
-with open('gears_coords.txt', 'r') as f:
+with open('../client/gears_coords.txt', 'r') as f:
     for line in f:
         line.strip()
         data_list = ast.literal_eval(line)
