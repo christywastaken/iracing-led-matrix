@@ -23,11 +23,11 @@ try:
             if iracing.ir_connected:
                 data = iracing.get_data()
                 data_str = json.dumps(data)
-                client.send(data.encode()) 
+                client.send(data_str.encode()) 
             time.sleep(0.05) 
 
 except KeyboardInterrupt:
-    #ctrl+c tp exit
+    #ctrl+c to exit
     print('Server terminated.')
     pass
 
