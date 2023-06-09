@@ -15,16 +15,16 @@ try:
         client, address = sock.accept()
         print(f"Got connection from: {address}")
         print('Press Ctrl+c to exit.')
-
+        
         while True:
             #Check connection to iRacing
             iracing.check_iracing()
             if iracing.ir_connected:
                 data = iracing.get_data()
-                client.send(data.encode())
-           
+                client.send(data.encode())  
 except KeyboardInterrupt:
     #ctrl+c tp exit
+    print('Server terminated.')
     pass
 
             
