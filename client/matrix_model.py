@@ -1,5 +1,6 @@
 from rgbmatrix import RGBMatrix, RGBMatrixOptions 
 import ast
+import json
 
 options = RGBMatrixOptions()
 options.rows = 32
@@ -34,7 +35,8 @@ def select_gear(gear: str):
       
 def process_data(data):
      try:
-        data = data.decode()
+        data_str = data.decode()
+        data = json.loads(data_str)
         select_gear(data['gear'])
      except Exception as err:
         print(f"Error: {err}")
