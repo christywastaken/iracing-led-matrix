@@ -27,16 +27,14 @@ def display_gear(gear_coords: list):
 
 def select_gear(gear: str):
     try:
-        if gear == 'N':
-            display_gear(gears_coords_list[0])
-        elif gear == 'R':
-            display_gear(gears_coords_list[-1])
-        else:
-            gear_int = int(gear)
-            display_gear(gears_coords_list[gear_int])
+        gear_int = int(gear)
+        display_gear(gears_coords_list[gear_int])
     except IndexError as err:
         print(f'Error: {err}')
       
 def process_data(data):
-     data = data.decode()
-     select_gear(data)
+     try:
+        data = data.decode()
+        select_gear(data['gear'])
+     except Exception as err:
+        print(f"Error: {err}")
