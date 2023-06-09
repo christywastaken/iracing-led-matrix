@@ -1,5 +1,6 @@
 import socket
 import time
+import json
 from iracing_model import IRacing
 
 sock = socket.socket()
@@ -21,9 +22,10 @@ try:
             iracing.check_iracing()
             if iracing.ir_connected:
                 data = iracing.get_data()
+                data_str = json.dumps(data)
                 client.send(data.encode()) 
             time.sleep(0.05) 
-            
+
 except KeyboardInterrupt:
     #ctrl+c tp exit
     print('Server terminated.')

@@ -19,7 +19,7 @@ class IRacing():
             self.ir_connected = True
             print('irsdk connected')
 
-    def get_gear():
+    def get_gear(self):
         try:
             return ir['CarIdxGear'][0]
         except: 
