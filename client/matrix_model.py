@@ -36,6 +36,7 @@ def select_gear(gear: str):
     except IndexError as err:
         print(f'Error: {err}')
       
+# def select_flag(flags: )
 
 def process_data(data):
      try:

@@ -1,36 +1,39 @@
 import irsdk
 import time
 
-ir = irsdk.IRSDK()
-
 
 class IRacing():
-
-    ir_connected = False
-    last_car_setup_tick = -1
+    def __init__(self):
+        self.ir = irsdk.IRSDK()
+        self.ir_connected = False
+        self.last_car_setup_tick = -1
 
     def check_iracing(self):
-        if self.ir_connected and not (ir.is_initialized and ir.is_connected):
-            #Reset variables and and shutdown ir library (clear all internal variables)
+        if self.ir_connected and not (self.ir.is_initialized and self.ir.is_connected):
+            #Reset variables and and shutdown self.ir library (clear all internal variables)
             self.ir_connected = False
             self.last_car_setup_tick = -1
-            ir.shutdown()
+            self.ir.shutdown()
             print('irsdk disconnected')
-        elif not self.ir_connected and ir.startup() and ir.is_initialized and ir.is_connected:
+        elif not self.ir_connected and self.ir.startup() and self.ir.is_initialized and self.ir.is_connected:
             self.ir_connected = True
             print('irsdk connected')
 
-
     def get_gear(self):
         try:
-            return ir['Gear']
+            return self.ir['Gear']
         except: 
             return 0
-
+    def get_flags(self):
+        try: 
+            return self.ir['SessionFlags']
+        except:
+            return None
 
     def get_data(self):
         gear = self.get_gear()
-        return {'gear': gear}
+        flags = self.get_flags()
+        return {'gear': gear, 'flags': flags}
     
 
 

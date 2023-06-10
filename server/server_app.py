@@ -23,7 +23,12 @@ try:
             if iracing.ir_connected:
                 data = iracing.get_data()
                 data_str = json.dumps(data)
-                client.send(data_str.encode()) 
+                try:
+                    client.send(data_str.encode()) 
+                except Exception as err:
+                    print(f"Error: {err}")
+                    client, address = sock.accept()
+                    print(f"Got connection from: {address}")
             time.sleep(0.05) 
 
 except KeyboardInterrupt:

@@ -1,35 +1,17 @@
-import irsdk
-import time
+from iracing_model import IRacing
 
-ir = irsdk.IRSDK()
+iracing = IRacing()
+iracing.check_iracing()
+data_dict = iracing.get_data()
+print(data_dict['flags'])
 
-ir_connected = False
-last_car_setup_tick = -1
-
-def check_iracing():
-    global ir_connected, last_car_setup_tick
-    if ir_connected and not (ir.is_initialized and ir.is_connected):
-        #Reset variables and and shutdown ir library (clear all internal variables)
-        ir_connected = False
-        last_car_setup_tick = -1
-        ir.shutdown()
-        print('irsdk disconnected')
-    elif not ir_connected and ir.startup() and ir.is_initialized and ir.is_connected:
-        ir_connected = True
-        print('irsdk connected')
-
-
-def get_gear():
-    try:
-        return ir['Gear']
-    except Exception as err:
-        print(f'Error: {err}') 
-        return 0
-
-
-def get_data():
-    gear = get_gear()
-    return {'gear': gear}
-
-check_iracing()
-print(get_gear())
+"""
+537133568 pace 
+2147745796 green
+268697600 racing???
+269221888 black - wrong way???
+268697632 blue
+268697601 checkered
+268697602 white 
+537149440 yellow? (exxtended caution rolling start)
+"""
