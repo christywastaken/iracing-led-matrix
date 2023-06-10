@@ -14,8 +14,8 @@ x1 = 4
 x2 = 9
 while x2 < 64:
     flag_checkered[x1:x2:, :4] = 0 
-    x1 += 4
-    x2 += 4
+    x1 += 8
+    x2 += 8
     
 rows, cols = np.where(flag_checkered == 1)
 coords_checkered = list(zip(rows.tolist(), cols.tolist()))

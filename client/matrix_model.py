@@ -52,18 +52,18 @@ class LEDMatrixDisplay:
             gear_int = int(gear)
             self.display_gear(self.gears_coords_list[gear_int])
         except IndexError as err:
-            print(f'Error: {err}')
+            print(f'Error 1: {err}')
 
     def process_data(self, data):
         try:
             data_str = data.decode()
             data = json.loads(data_str)
-            if self.gear != data['gear']:
-                self.gear = data['gear']
-                self.select_gear(self.gear)
-            if self.flag != data['flag']:
-                self.flag = data['flag']
-                self.display_flag(data['flag'])
+            
+            self.gear = data['gear']
+            self.select_gear(self.gear)
+        
+            # self.flag = data['flags']
+            # self.display_flag(self.flag)
         except Exception as err:
-            print(f"Error: {err}")
+            print(f"Error 2: {err}")
 
