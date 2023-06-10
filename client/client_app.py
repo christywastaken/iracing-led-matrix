@@ -13,5 +13,5 @@ sock.connect((PC_IP, PORT))
 while True:
     data = sock.recv(1024)
     process_data(data)
-    print(f"Recieved data: {data}")
+    
     
