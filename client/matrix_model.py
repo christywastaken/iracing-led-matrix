@@ -32,14 +32,12 @@ class LEDMatrixDisplay:
             self.flag_coords_dict = json.load(f)
 
     def display_gear(self, gear_coords: list):
-        print('displaying gear')
-        self.matrix.Clear()
+        
         for x, y  in gear_coords:
             self.matrix.SetPixel(x, y, 255, 0, 0)
 
     def display_flag(self, flag: dict):
-        print('displaying flag')
-        self.matrix.Clear()
+        
         if flag == 2147745796:
             #Display green flag
             for coords in self.flag_coords_dict['green']:
@@ -50,6 +48,7 @@ class LEDMatrixDisplay:
                 self.matrix.SetPixel(coords[0], coords[1], 255, 255, 255)
 
     def select_gear(self, gear: str):
+        
         try:
             gear_int = int(gear)
             self.display_gear(self.gears_coords_list[gear_int])
@@ -58,14 +57,17 @@ class LEDMatrixDisplay:
 
     def process_data(self, data):
         try:
+          
+            self.matrix.Clear()
             data_str = data.decode()
             data = json.loads(data_str)
             
             self.gear = data['gear']
             self.select_gear(self.gear)
         
-            # self.flag = data['flags']
-            # self.display_flag(self.flag)
+            self.flag = data['flags']
+            self.display_flag(self.flag)
+            print(f'Gear: {self.gear}Flags: {self.flag}')
         except Exception as err:
-            print(f"Error 2: {err}")
+            print(f"Error 2: {err}. Data: {data}")
 
