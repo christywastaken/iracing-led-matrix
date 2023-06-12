@@ -16,7 +16,7 @@ try:
         client, address = sock.accept()
         print(f"Got connection from: {address}")
         print('Press Ctrl+c to exit.')
-        
+         #TODO: handle client.send only when data changes. 
         while True:
             #Check connection to iRacing
             iracing.check_iracing()

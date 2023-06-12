@@ -3,6 +3,8 @@ import ast
 import json
 
 class LEDMatrixDisplay:
+    #TODO: workout more efficient way to display pixels.
+    #TODO: fix the conflict between flags and gears
     def __init__(self):
         options = RGBMatrixOptions()
         options.rows = 32
