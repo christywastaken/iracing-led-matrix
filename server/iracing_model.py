@@ -25,6 +25,7 @@ class IRacing():
             return self.ir['Gear']
         except: 
             return 0
+        
     def get_flags(self):
         try: 
             return self.ir['SessionFlags']
