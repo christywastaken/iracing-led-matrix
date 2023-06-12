@@ -10,7 +10,7 @@ sock.listen(1)
 print('listening for client')
 
 iracing = IRacing()
-
+data = {}
 try:
     while True:
         client, address = sock.accept()
@@ -21,14 +21,17 @@ try:
             #Check connection to iRacing
             iracing.check_iracing()
             if iracing.ir_connected:
-                data = iracing.get_data()
-                data_str = json.dumps(data)
-                try:
-                    client.send(data_str.encode()) 
-                except Exception as err:
-                    print(f"Error: {err}")
-                    client, address = sock.accept()
-                    print(f"Got connection from: {address}")
+                data_1 = iracing.get_data()
+                if data != data_1:
+                    data = data_1
+                    data_str = json.dumps(data)
+                    try:
+                        client.send(data_str.encode())
+                        print('sending data to client') 
+                    except Exception as err:
+                        print(f"Error: {err}")
+                        client, address = sock.accept()
+                        print(f"Got connection from: {address}")
             time.sleep(0.05) 
 
 except KeyboardInterrupt:

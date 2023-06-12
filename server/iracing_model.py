@@ -7,6 +7,7 @@ class IRacing():
         self.ir = irsdk.IRSDK()
         self.ir_connected = False
         self.last_car_setup_tick = -1
+       
 
     def check_iracing(self):
         if self.ir_connected and not (self.ir.is_initialized and self.ir.is_connected):
