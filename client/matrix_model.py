@@ -1,6 +1,7 @@
 from rgbmatrix import RGBMatrix, RGBMatrixOptions 
 import ast
 import json
+import irsdk
 
 class LEDMatrixDisplay:
     #TODO: workout more efficient way to display pixels.
@@ -16,7 +17,7 @@ class LEDMatrixDisplay:
         options.hardware_mapping = 'adafruit-hat'
 
         self.matrix = RGBMatrix(options=options)
-
+        self.flags = irsdk.Flags()
         self.gears_coords_list = []
         self.flag_coords_dict = {}
         self.gear = None
@@ -36,13 +37,13 @@ class LEDMatrixDisplay:
         for x, y  in gear_coords:
             self.matrix.SetPixel(x, y, 255, 0, 0)
 
-    def display_flag(self, flag: dict):
-        
-        if flag == 2147745796:
+    def display_flag(self, flag):
+        #TODO: change to allow for multiple flags displayed. 
+        if flag & self.flags.green != 0: #if green flag bit is set
             #Display green flag
             for coords in self.flag_coords_dict['green']:
                 self.matrix.SetPixel(coords[0], coords[1], 0, 225, 0)
-        elif flag == 268697601:
+        elif flag & self.flags.checkered != 0: #if checkered flag bit is set
             #Display checkered flag
             for coords in self.flag_coords_dict['checkered']:
                 self.matrix.SetPixel(coords[0], coords[1], 255, 255, 255)
@@ -67,7 +68,7 @@ class LEDMatrixDisplay:
         
             self.flag = data['flags']
             self.display_flag(self.flag)
-            print(f'Gear: {self.gear}Flags: {self.flag}')
+            print(f'Gear: {self.gear} | Flags: {self.flag}')
         except Exception as err:
             print(f"Error 2: {err}. Data: {data}")
 
