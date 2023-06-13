@@ -1,5 +1,4 @@
 import irsdk
-import time
 
 
 class IRacing():

@@ -16,13 +16,13 @@ try:
         client, address = sock.accept()
         print(f"Got connection from: {address}")
         print('Press Ctrl+c to exit.')
-         #TODO: handle client.send only when data changes. 
+        
         while True:
             #Check connection to iRacing
             iracing.check_iracing()
             if iracing.ir_connected:
                 data_1 = iracing.get_data()
-                if data != data_1:
+                if data != data_1: #Only send data to client if data changes.
                     data = data_1
                     data_str = json.dumps(data)
                     try:
