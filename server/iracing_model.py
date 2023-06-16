@@ -38,9 +38,9 @@ class IRacing():
     
 
     def get_bb(self):
-        try: 
-            return self.ir['CarSetup']
-        except:
+        if self.ir['dcBrakeBias']:
+            return round(self.ir['dcBrakeBias'],1)
+        else:
             return 0
     
 
@@ -55,7 +55,11 @@ class IRacing():
         gear = self.get_gear()
         flags = self.get_flags()
         abs_active = self.get_ABS()
-        return {'gear': gear, 'flags': flags, 'abs_active': abs_active}
+        brake_bias = self.get_bb()
+        return {'gear': gear, 
+                'flags': flags, 
+                'abs_active': abs_active, 
+                "brake_bias": brake_bias}
         
 
     def check_new_data(self):
