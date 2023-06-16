@@ -21,14 +21,12 @@ try:
             #Check connection to iRacing
             iracing.check_iracing()
             if iracing.ir_connected:
-                data_1 = iracing.get_data()
-                if data != data_1: #Only send data to client if data changes.
-                    data = data_1
-                    data_str = json.dumps(data)
+                if iracing.check_new_data(): #Only send data to client if data changes.
+                    data_str = json.dumps(iracing.last_data)
                     try:
                         client.send(data_str.encode())
                         print('sending data to client') 
-                    except Exception as err:
+                    except Exception as err: #TODO: Do i need this here??
                         print(f"Error: {err}")
                         client, address = sock.accept()
                         print(f"Got connection from: {address}")
