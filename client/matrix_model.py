@@ -1,4 +1,4 @@
-from rgbmatrix import RGBMatrix, RGBMatrixOptions 
+from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 import ast
 import json
 import irsdk
@@ -21,13 +21,12 @@ class LEDMatrixDisplay:
         
 
         self.matrix = RGBMatrix(options=options)
+        self.canvas = self.matrix.CreateFrameCanvas()
         self.flags = irsdk.Flags()
         self.gears_coords_list = []
         self.flag_coords_dict = {}
         self.abs_coords_dict = {}
-        self.gear = None
-        self.flag = None
-        self.abs_active = False
+        
 
         #TODO consolidate these files into one JSON
         with open('../client/gears_coords.txt', 'r') as f:
@@ -45,7 +44,7 @@ class LEDMatrixDisplay:
 
     def display_gear(self, gear_coords: list):
         for x, y  in gear_coords:
-            self.matrix.SetPixel(x, y, 255, 0, 0)
+            self.canvas.SetPixel(x, y, 255, 0, 0)
 
 
     def display_flag(self, flag):
@@ -55,27 +54,27 @@ class LEDMatrixDisplay:
             if (flag & self.flags.yellow) or (flag & self.flags.yellow_waving) or (flag & self.flags.caution) or (flag & self.flags.caution_waving) != 0:
                 #display yellow flag
                 for coords in self.flag_coords_dict['plain']:
-                    self.matrix.SetPixel(coords[0], coords[1], 255, 200, 0) 
+                    self.canvas.SetPixel(coords[0], coords[1], 255, 200, 0) 
             elif (flag & self.flags.black) or (flag & self.flags.disqualify) or (flag & self.flags.furled) != 0:
                 #display black flag
                 for coords in self.flag_coords_dict['black']:
-                    self.matrix.SetPixel(coords[0], coords[1], 255, 255, 255)
+                    self.canvas.SetPixel(coords[0], coords[1], 255, 255, 255)
             elif flag & self.flags.blue != 0:
                 #display blue flag
                 for coords in self.flag_coords_dict['plain']:
-                    self.matrix.SetPixel(coords[0], coords[1], 0, 200, 255)
+                    self.canvas.SetPixel(coords[0], coords[1], 0, 200, 255)
             elif flag & self.flags.green != 0: #if green flag bit is set
                 #Display green flag
                 for coords in self.flag_coords_dict['plain']:
-                    self.matrix.SetPixel(coords[0], coords[1], 0, 225, 0)
+                    self.canvas.SetPixel(coords[0], coords[1], 0, 225, 0)
             elif flag & self.flags.checkered != 0:
                 #Display checkered flag
                 for coords in self.flag_coords_dict['checkered']:
-                    self.matrix.SetPixel(coords[0], coords[1], 255, 255, 255)
+                    self.canvas.SetPixel(coords[0], coords[1], 255, 255, 255)
             elif flag & self.flags.white != 0:
                 #Display white flag
                 for coords in self.flag_coords_dict['plain']:
-                    self.matrix.SetPixel(coords[0], coords[1], 255, 255, 255)
+                    self.canvas.SetPixel(coords[0], coords[1], 255, 255, 255)
             
         except Exception as err:
             print(f'Error 4: {err}')
@@ -93,25 +92,44 @@ class LEDMatrixDisplay:
         try:
             if abs_active:
                 for coords in self.abs_coords_dict['abs']:
-                    self.matrix.SetPixel(coords[0], coords[1], 220, 0, 255)
+                    self.canvas.SetPixel(coords[0], coords[1], 255, 0, 255)
         except Exception as err:
             print(f"Error 5: {err}")
 
 
+    def display_bb(self, brake_bias: float):
+        try:
+            font = graphics.Font()
+            font.LoadFont('../rpi-rgb-led-matrix/fonts/5x8.bdf')
+            text_colour = graphics.Color(255,255,255)
+            x = 30
+            y = 20
+            text = str(brake_bias)
+            graphics.DrawText(self.canvas, font, x, y, text_colour, text)
+            
+        except Exception as err:
+            print(f"Error 6: {err}")
+
+
     def process_data(self, data):
         try:
+            #TODO worth implementing only clearing the pixels that are being replaced?
+        
             self.matrix.Clear()
             data_str = data.decode()
             data = json.loads(data_str)
             
-            self.gear = data['gear']
-            self.flag = data['flags']
-            self.abs_active = data['abs_active']
-            print(f'Gear: {self.gear} | Flags: {self.flag}')
+            gear = data['gear']
+            flag = data['flags']
+            abs_active = data['abs_active']
+            brake_bias = data['brake_bias']
+            print(f'Gear: {gear} | Flags: {flag}')
 
-            self.select_gear(self.gear)
-            self.display_flag(self.flag)
-            self.display_abs(self.abs_active)
+            self.select_gear(gear)
+            self.display_flag(flag)
+            self.display_abs(abs_active)
+            self.display_bb(brake_bias)
+            self.matrix.SwapOnVSync(self.canvas)
         except Exception as err:
             print(f"Error 2: {err}. Data: {data}")
 
