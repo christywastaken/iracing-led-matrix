@@ -13,7 +13,7 @@ class LEDMatrixDisplay:
         options.chain_length = 1
         options.parallel = 1
         options.disable_hardware_pulsing = 1
-        options.brightness = 40
+        options.brightness = 80
         options.hardware_mapping = 'adafruit-hat'
         options.show_refresh_rate = 1
         options.limit_refresh_rate_hz = 0
@@ -24,9 +24,12 @@ class LEDMatrixDisplay:
         self.flags = irsdk.Flags()
         self.gears_coords_list = []
         self.flag_coords_dict = {}
+        self.abs_coords_dict = {}
         self.gear = None
         self.flag = None
+        self.abs_active = False
 
+        #TODO consolidate these files into one JSON
         with open('../client/gears_coords.txt', 'r') as f:
             for line in f:
                 line.strip()
@@ -35,6 +38,9 @@ class LEDMatrixDisplay:
 
         with open('../client/flags_coords.txt', 'r') as f:
             self.flag_coords_dict = json.load(f)
+
+        with open('../client/abs_coords.txt', 'r') as f:
+            self.abs_coords_dict = json.load(f)
 
 
     def display_gear(self, gear_coords: list):
@@ -82,19 +88,30 @@ class LEDMatrixDisplay:
         except IndexError as err:
             print(f'Error 1: {err}')
 
+
+    def display_abs(self, abs_active: bool):
+        try:
+            if abs_active:
+                for coords in self.abs_coords_dict['abs']:
+                    self.matrix.SetPixel(coords[0], coords[1], 220, 0, 255)
+        except Exception as err:
+            print(f"Error 5: {err}")
+
+
     def process_data(self, data):
         try:
-          
             self.matrix.Clear()
             data_str = data.decode()
             data = json.loads(data_str)
             
             self.gear = data['gear']
-            self.select_gear(self.gear)
-        
             self.flag = data['flags']
-            self.display_flag(self.flag)
+            self.abs_active = data['abs_active']
             print(f'Gear: {self.gear} | Flags: {self.flag}')
+
+            self.select_gear(self.gear)
+            self.display_flag(self.flag)
+            self.display_abs(self.abs_active)
         except Exception as err:
             print(f"Error 2: {err}. Data: {data}")
 
