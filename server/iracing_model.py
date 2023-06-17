@@ -34,7 +34,7 @@ class IRacing():
         try: 
             return self.ir['SessionFlags']
         except:
-            return None
+            return 0
     
 
     def get_bb(self):
@@ -51,15 +51,32 @@ class IRacing():
             return 0
 
 
+    def get_track_temp(self):
+        if self.ir['TrackTempCrew']: 
+            return int(round(self.ir['TrackTempCrew'], 0))
+        else: 
+            return 0
+    
+    def get_pit_lim_active(self):
+        if self.ir['EngineWarnings']:
+            return self.ir['EngineWarnings']
+        else:
+            return 0
+        
+
     def get_data(self):
         gear = self.get_gear()
         flags = self.get_flags()
         abs_active = self.get_ABS()
         brake_bias = self.get_bb()
+        track_temp = self.get_track_temp()
+        pit_lim_active = self.get_pit_lim_active()
         return {'gear': gear, 
                 'flags': flags, 
                 'abs_active': abs_active, 
-                "brake_bias": brake_bias}
+                "brake_bias": brake_bias,
+                'track_temp': track_temp,
+                'pit_lim_active': pit_lim_active}
         
 
     def check_new_data(self):
