@@ -22,11 +22,13 @@ class LEDMatrixDisplay:
 
         self.matrix = RGBMatrix(options=options)
         self.canvas = self.matrix.CreateFrameCanvas()
+        self.font = graphics.Font()
         self.flags = irsdk.Flags()
+        self.engine_warnings = irsdk.EngineWarnings()
         self.gears_coords_list = []
         self.flag_coords_dict = {}
         self.abs_coords_dict = {}
-        
+        self.pit_lim_coords_dict = {}
 
         #TODO consolidate these files into one JSON
         with open('../client/gears_coords.txt', 'r') as f:
@@ -40,6 +42,9 @@ class LEDMatrixDisplay:
 
         with open('../client/abs_coords.txt', 'r') as f:
             self.abs_coords_dict = json.load(f)
+
+        with open('../client/pit_lim_coords.txt', 'r') as f:
+            self.pit_lim_coords_dict = json.load(f)
 
 
     def display_gear(self, gear_coords: list):
@@ -99,16 +104,39 @@ class LEDMatrixDisplay:
 
     def display_bb(self, brake_bias: float):
         try:
-            font = graphics.Font()
-            font.LoadFont('../rpi-rgb-led-matrix/fonts/5x8.bdf')
+            
+            self.font.LoadFont('../rpi-rgb-led-matrix/fonts/5x7.bdf')
             text_colour = graphics.Color(255,255,255)
             x = 30
-            y = 20
+            y = 12
             text = str(brake_bias)
-            graphics.DrawText(self.canvas, font, x, y, text_colour, text)
+            graphics.DrawText(self.canvas, self.font, x, y, text_colour, text)
             
         except Exception as err:
             print(f"Error 6: {err}")
+
+
+    def display_track_temp(self, track_temp: int):
+        try: 
+            self.font.LoadFont('../rpi-rgb-led-matrix/fonts/5x7.bdf')
+            text_colour = graphics.Color(255,255,255)
+            x = 30
+            y = 24
+            text = f"{str(track_temp)}°"
+            graphics.DrawText(self.canvas, self.font, x, y, text_colour, text)
+
+        except Exception as err:
+            print(f"Error 6: {err}")
+            
+    
+    def display_pit_lim(self, pit_lim_active):
+        try:
+            if pit_lim_active & self.engine_warnings.pit_speed_limiter:  # Check bit is active for pit lim
+                for coords in self.pit_lim_coords_dict['pit_lim']:  # assuming it's a list of tuples
+                    self.canvas.SetPixel(coords[0], coords[1], 50, 0, 255)
+        except Exception as err:
+            print(f'Error 7: {err}')
+
 
 
     def process_data(self, data):
@@ -123,12 +151,17 @@ class LEDMatrixDisplay:
             flag = data['flags']
             abs_active = data['abs_active']
             brake_bias = data['brake_bias']
-            print(f'Gear: {gear} | Flags: {flag}')
+            track_temp = data['track_temp']
+            pit_lim = data['pit_lim_active']
+            print(f'Gear: {gear} | Flags: {flag} | ABS: {abs_active} | BB: {brake_bias}')
 
             self.select_gear(gear)
             self.display_flag(flag)
             self.display_abs(abs_active)
             self.display_bb(brake_bias)
+            self.display_track_temp(track_temp)
+            self.display_pit_lim(pit_lim)
+
             self.matrix.SwapOnVSync(self.canvas)
         except Exception as err:
             print(f"Error 2: {err}. Data: {data}")
