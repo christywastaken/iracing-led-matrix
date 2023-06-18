@@ -25,26 +25,10 @@ class LEDMatrixDisplay:
         self.font = graphics.Font()
         self.flags = irsdk.Flags()
         self.engine_warnings = irsdk.EngineWarnings()
-        self.gears_coords_list = []
-        self.flag_coords_dict = {}
-        self.abs_coords_dict = {}
-        self.pit_lim_coords_dict = {}
+        self.matrix_coords = {}
 
-        #TODO consolidate these files into one JSON
-        with open('../client/gears_coords.txt', 'r') as f:
-            for line in f:
-                line.strip()
-                data_list = ast.literal_eval(line)
-                self.gears_coords_list.append(data_list)
-
-        with open('../client/flags_coords.txt', 'r') as f:
-            self.flag_coords_dict = json.load(f)
-
-        with open('../client/abs_coords.txt', 'r') as f:
-            self.abs_coords_dict = json.load(f)
-
-        with open('../client/pit_lim_coords.txt', 'r') as f:
-            self.pit_lim_coords_dict = json.load(f)
+        with open('../client/matrix_coords.txt', 'r') as f:
+            self.matrix_coords = json.load(f)
 
 
     def display_gear(self, gear_coords: list):
@@ -58,27 +42,27 @@ class LEDMatrixDisplay:
              #if checkered flag bit is set
             if (flag & self.flags.yellow) or (flag & self.flags.yellow_waving) or (flag & self.flags.caution) or (flag & self.flags.caution_waving) != 0:
                 #display yellow flag
-                for coords in self.flag_coords_dict['plain']:
+                for coords in self.matrix_coords['flags']['plain']:
                     self.canvas.SetPixel(coords[0], coords[1], 255, 200, 0) 
             elif (flag & self.flags.black) or (flag & self.flags.disqualify) or (flag & self.flags.furled) != 0:
                 #display black flag
-                for coords in self.flag_coords_dict['black']:
+                for coords in self.matrix_coords['flags']['black']:
                     self.canvas.SetPixel(coords[0], coords[1], 255, 255, 255)
             elif flag & self.flags.blue != 0:
                 #display blue flag
-                for coords in self.flag_coords_dict['plain']:
+                for coords in self.matrix_coords['flags']['plain']:
                     self.canvas.SetPixel(coords[0], coords[1], 0, 200, 255)
             elif flag & self.flags.green != 0: #if green flag bit is set
                 #Display green flag
-                for coords in self.flag_coords_dict['plain']:
+                for coords in self.matrix_coords['flags']['plain']:
                     self.canvas.SetPixel(coords[0], coords[1], 0, 225, 0)
             elif flag & self.flags.checkered != 0:
                 #Display checkered flag
-                for coords in self.flag_coords_dict['checkered']:
+                for coords in self.matrix_coords['flags']['checkered']:
                     self.canvas.SetPixel(coords[0], coords[1], 255, 255, 255)
             elif flag & self.flags.white != 0:
                 #Display white flag
-                for coords in self.flag_coords_dict['plain']:
+                for coords in self.matrix_coords['flags']['plain']:
                     self.canvas.SetPixel(coords[0], coords[1], 255, 255, 255)
             
         except Exception as err:
@@ -88,7 +72,7 @@ class LEDMatrixDisplay:
     def select_gear(self, gear: str):
         try:
             gear_int = int(gear)
-            self.display_gear(self.gears_coords_list[gear_int])
+            self.display_gear(self.matrix_coords['gears'][gear_int])
         except IndexError as err:
             print(f'Error 1: {err}')
 
@@ -96,7 +80,7 @@ class LEDMatrixDisplay:
     def display_abs(self, abs_active: bool):
         try:
             if abs_active:
-                for coords in self.abs_coords_dict['abs']:
+                for coords in self.matrix_coords['abs']:
                     self.canvas.SetPixel(coords[0], coords[1], 255, 0, 255)
         except Exception as err:
             print(f"Error 5: {err}")
@@ -132,7 +116,7 @@ class LEDMatrixDisplay:
     def display_pit_lim(self, pit_lim_active):
         try:
             if pit_lim_active & self.engine_warnings.pit_speed_limiter:  # Check bit is active for pit lim
-                for coords in self.pit_lim_coords_dict['pit_lim']:  # assuming it's a list of tuples
+                for coords in self.matrix_coords['pit_lim']:  # assuming it's a list of tuples
                     self.canvas.SetPixel(coords[0], coords[1], 50, 0, 255)
         except Exception as err:
             print(f'Error 7: {err}')
