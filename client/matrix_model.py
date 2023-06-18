@@ -118,28 +118,23 @@ class LEDMatrixDisplay:
 
     def process_data(self, data):
         try:
-            #TODO worth implementing only clearing the pixels that are being replaced?
-
             data_str = data.decode()
-            data = json.loads(data_str)
-            
-            gear = data['gear']
-            flags = data['flags']
-            brake_bias = data['brake_bias']
-            track_temp = data['track_temp']
-            abs_active = data['abs_active']
-            pit_lim_active = data['pit_lim_active']
-            
-            self.matrix.Clear()
+            json_objects = data_str.split('\n')
+            last_json_object = next((obj for obj in reversed(json_objects) if obj), None)
 
-            self.display_gear(gear)
-            self.display_flag(flags)
-            self.display_abs(abs_active)
-            self.display_bb(brake_bias)
-            self.display_track_temp(track_temp)
-            self.display_pit_lim(pit_lim_active)
+            if last_json_object:
+                data = json.loads(last_json_object)
+                
+                self.matrix.Clear()
 
-            self.matrix.SwapOnVSync(self.canvas)
+                self.display_gear(data['gear'])
+                self.display_flag(data['flags'])
+                self.display_abs(data['abs_active'])
+                self.display_bb(data['brake_bias'])
+                self.display_track_temp(data['track_temp'])
+                self.display_pit_lim(data['pit_lim_active'])
+
+                self.matrix.SwapOnVSync(self.canvas)
         except Exception as err:
             print(f"Error 2: {err}. Data: {data}")
 
