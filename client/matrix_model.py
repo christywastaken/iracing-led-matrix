@@ -2,25 +2,6 @@ from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 import json
 import irsdk
 
-class Telemtry:
-    def __init__(self):
-        self.current = {
-            "gear": 0,
-            "flags": 0,
-            "brake_bias": 0,
-            "track_temp": 0,
-            "abs_active": 0,
-            "pit_lim_active": 0,
-        }
-        self.previous = self.current.copy()
-
-    def update_data(self, data):
-        self.previous = self.current.copy()
-        self.current.update(data)
-
-    def has_changed(self, key):
-        return self.current[key] != self.previous[key]
-
 
 class LEDMatrixDisplay:
     #TODO: workout more efficient way to display pixels.
@@ -35,8 +16,9 @@ class LEDMatrixDisplay:
         options.hardware_mapping = 'adafruit-hat'
         options.show_refresh_rate = 1
         options.limit_refresh_rate_hz = 200
-        options.pwm_lsb_nanoseconds = 50
-        self.telemtry = Telemtry()
+        # options.pwm_lsb_nanoseconds = 50
+
+
         self.matrix = RGBMatrix(options=options)
         self.canvas = self.matrix.CreateFrameCanvas()
         self.font = graphics.Font()
@@ -44,7 +26,7 @@ class LEDMatrixDisplay:
         self.flags = irsdk.Flags()
         self.engine_warnings = irsdk.EngineWarnings()
         self.matrix_coords = {}
-
+        
         with open('../client/matrix_coords.txt', 'r') as f:
             self.matrix_coords = json.load(f)
 
@@ -77,12 +59,11 @@ class LEDMatrixDisplay:
                 #Display white flag
                 for coords in self.matrix_coords['flags']['plain']:
                     self.canvas.SetPixel(coords[0], coords[1], 255, 255, 255)
-            else:
-                for coords in self.matrix_coords['flags']['plain']:
-                    self.canvas.SetPixel(coords[0], coords[1], 0, 0, 0) 
+           
         
         except Exception as err:
             print(f'Error 4: {err}')
+
 
 
     def display_gear(self, gear: str):
@@ -99,9 +80,6 @@ class LEDMatrixDisplay:
             if abs_active:
                 for coords in self.matrix_coords['abs']:
                     self.canvas.SetPixel(coords[0], coords[1], 255, 0, 255)
-            else: 
-                for coords in self.matrix_coords['abs']:
-                    self.canvas.SetPixel(coords[0], coords[1], 0, 0, 0)
         except Exception as err:
             print(f"Error 5: {err}")
 
@@ -131,11 +109,8 @@ class LEDMatrixDisplay:
     def display_pit_lim(self, pit_lim_active):
         try:
             if pit_lim_active & self.engine_warnings.pit_speed_limiter:  # Check bit is active for pit lim
-                for coords in self.matrix_coords['pit_lim']:  # assuming it's a list of tuples
+                for coords in self.matrix_coords['pit_lim']:  
                     self.canvas.SetPixel(coords[0], coords[1], 50, 0, 255)
-            else:
-                for coords in self.matrix_coords['pit_lim']:
-                    self.canvas.SetPixel(coords[0], coords[1], 0, 0, 0)
         except Exception as err:
             print(f'Error 7: {err}')
 
@@ -144,24 +119,25 @@ class LEDMatrixDisplay:
     def process_data(self, data):
         try:
             #TODO worth implementing only clearing the pixels that are being replaced?
-        
+
             data_str = data.decode()
             data = json.loads(data_str)
             
-            self.telemtry.update_data(data)
+            gear = data['gear']
+            flags = data['flags']
+            brake_bias = data['brake_bias']
+            track_temp = data['track_temp']
+            abs_active = data['abs_active']
+            pit_lim_active = data['pit_lim_active']
+            
+            self.matrix.Clear()
 
-            if self.telemtry.has_changed('gear'):
-                self.display_gear(self.telemtry.current['gear'])
-            if self.telemtry.has_changed('flags'):
-                self.display_flag(self.telemtry.current['flags'])
-            if self.telemetry.has_changed('abs_active'):
-                self.display_abs(self.telemetry.current['abs_active'])
-            if self.telemetry.has_changed('brake_bias'):
-                self.display_bb(self.telemetry.current['brake_bias'])
-            if self.telemetry.has_changed('track_temp'):
-                self.display_track_temp(self.telemetry.current['track_temp'])
-            if self.telemetry.has_changed('pit_lim_active'):
-                self.display_pit_lim(self.telemetry.current['pit_lim_active'])
+            self.display_gear(gear)
+            self.display_flag(flags)
+            self.display_abs(abs_active)
+            self.display_bb(brake_bias)
+            self.display_track_temp(track_temp)
+            self.display_pit_lim(pit_lim_active)
 
             self.matrix.SwapOnVSync(self.canvas)
         except Exception as err:
