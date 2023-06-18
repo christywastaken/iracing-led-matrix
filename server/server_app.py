@@ -22,9 +22,9 @@ try:
             iracing.check_iracing()
             if iracing.ir_connected:
                 if iracing.check_new_data(): #Only send data to client if data changes.
-                    data_str = json.dumps(iracing.last_data)
+                    data_str = json.dumps(iracing.last_data) + '\n'
                     try:
-                        client.send(data_str.encode())
+                        client.sendall(data_str.encode())
                         print('sending data to client') 
                     except Exception as err: #TODO: Do i need this here??
                         print(f"Error: {err}")
