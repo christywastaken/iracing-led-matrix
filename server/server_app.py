@@ -11,7 +11,8 @@ print('listening for client')
 
 iracing = IRacing()
 data = {}
-try:
+try: #TODO: fix this loop to always reconnect if client is dropped. 
+    #TODO: when iracing disconnects, reset data = {} and display a disconnected screen
     while True:
         client, address = sock.accept()
         print(f"Got connection from: {address}")
