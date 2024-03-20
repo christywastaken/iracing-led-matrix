@@ -1,6 +1,6 @@
 # iRacing LED Matrix Display
 
-This project is a dynamic LED Matrix Display system for iRacing telemetry data. It utilizes a Raspberry Pi 3, an Adafruit RGB Bonnet, and a 64 x 32 LED matrix to display various telemetry metrics in real-time during iRacing sessions. The telemetry data is obtained from iRacing using the pyirsdk package and displayed on the LED matrix using the rpi-rgb-led-matrix package. Numpy is used to create 2D matrices for displaying various elements on the LED Matrix. 
+This project is a dynamic LED Matrix Display system for iRacing telemetry data. It utilizes a Raspberry Pi, an Adafruit RGB Bonnet, and a 64 x 32 LED matrix to display various telemetry metrics in real-time during iRacing sessions. The telemetry data is obtained from iRacing using the pyirsdk package and displayed on the LED matrix using the rpi-rgb-led-matrix package. Numpy is used to create 2D matrices for displaying various elements on the LED Matrix. 
 
 The system consists of two main parts:
 
